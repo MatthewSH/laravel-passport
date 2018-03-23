@@ -278,11 +278,11 @@ class Passport
      * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
      * @param  array  $scopes
      * @param  string  $guard
-     * @return void
+     * @return \Illuminate\Contracts\Auth\Authenticatable
      */
     public static function actingAs($user, $scopes = [], $guard = 'api')
     {
-        $token = Mockery::mock(Token::class)->shouldIgnoreMissing(false);
+        $token = Mockery::mock(config('passport.token.model', Laravel\Passport\Token::class))->shouldIgnoreMissing(false);
 
         foreach ($scopes as $scope) {
             $token->shouldReceive('can')->with($scope)->andReturn(true);
@@ -293,6 +293,8 @@ class Passport
         app('auth')->guard($guard)->setUser($user);
 
         app('auth')->shouldUse($guard);
+
+        return $user;
     }
 
     /**
